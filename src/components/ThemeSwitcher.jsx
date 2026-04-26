@@ -3,49 +3,148 @@ import { Palette, X, Volume2, VolumeX } from 'lucide-react';
 import './ThemeSwitcher.css';
 
 const themes = [
-  { id: 'normal', name: 'Normal', icon: '🌌', audio: 'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg' },
-  { id: 'harry-potter', name: 'Harry Potter', icon: '⚡', audio: 'https://actions.google.com/sounds/v1/magic/wind_chimes.ogg' },
-  { id: 'dnd', name: 'D&D', icon: '🐉', audio: 'https://actions.google.com/sounds/v1/ambiences/fire.ogg' },
-  { id: 'sci-fi', name: 'Sci-Fi', icon: '🤖', audio: 'https://actions.google.com/sounds/v1/science_fiction/space_room.ogg' }
+  { id: 'normal', name: 'Normal', icon: '🌌' },
+  { id: 'harry-potter', name: 'Harry Potter', icon: '⚡' },
+  { id: 'dnd', name: 'D&D', icon: '🐉' },
+  { id: 'sci-fi', name: 'Sci-Fi', icon: '🤖' }
 ];
 
 const ThemeSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('normal');
   const [isAudioOn, setIsAudioOn] = useState(false);
-  const audioRef = useRef(new Audio());
+  
+  const audioCtxRef = useRef(null);
+  const oscillatorRefs = useRef([]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('portfolio-theme') || 'normal';
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    // Set up audio looping
-    audioRef.current.loop = true;
-    
     return () => {
-      audioRef.current.pause();
+      stopAmbientSound();
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+      }
     };
   }, []);
 
+  const stopAmbientSound = () => {
+    oscillatorRefs.current.forEach(node => {
+      try {
+        node.stop();
+        node.disconnect();
+      } catch (e) {}
+    });
+    oscillatorRefs.current = [];
+  };
+
+  const playAmbientSound = (themeId) => {
+    stopAmbientSound();
+    
+    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+      audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const ctx = audioCtxRef.current;
+    
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    masterGain.gain.value = 0.1; // Keep it quiet and ambient
+
+    if (themeId === 'normal') {
+      // Warm, relaxing chord
+      [220, 277.18, 329.63].forEach(freq => {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = freq / 2;
+        osc.connect(masterGain);
+        osc.start();
+        oscillatorRefs.current.push(osc);
+      });
+    } else if (themeId === 'harry-potter') {
+      // Ethereal, high pitched shimmering
+      [440, 554.37, 659.25, 880].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.5 + (i * 0.2); // Shimmer effect
+        lfoGain.gain.value = 10;
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        lfo.start();
+        oscillatorRefs.current.push(lfo);
+        
+        osc.connect(masterGain);
+        osc.start();
+        oscillatorRefs.current.push(osc);
+      });
+      masterGain.gain.value = 0.05; // Make it softer
+    } else if (themeId === 'dnd') {
+      // Deep, hollow, wind-like drone
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'square';
+      osc1.frequency.value = 65.41; // C2
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 400;
+      
+      osc1.connect(filter);
+      filter.connect(masterGain);
+      osc1.start();
+      oscillatorRefs.current.push(osc1);
+      masterGain.gain.value = 0.03;
+    } else if (themeId === 'sci-fi') {
+      // Low rumbling cyberpunk drone
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.value = 55; // A1
+      
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 2; // Fast rumble
+      
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = 15;
+      
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      lfo.start();
+      oscillatorRefs.current.push(lfo);
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 300;
+      
+      osc.connect(filter);
+      filter.connect(masterGain);
+      osc.start();
+      oscillatorRefs.current.push(osc);
+      masterGain.gain.value = 0.05;
+    }
+  };
+
   useEffect(() => {
-    const activeTheme = themes.find(t => t.id === currentTheme);
-    if (activeTheme) {
-      audioRef.current.src = activeTheme.audio;
-      if (isAudioOn) {
-        audioRef.current.play().catch(e => console.log('Audio play failed:', e));
-      }
+    if (isAudioOn) {
+      playAmbientSound(currentTheme);
+    } else {
+      stopAmbientSound();
     }
   }, [currentTheme, isAudioOn]);
 
   const toggleAudio = () => {
-    if (isAudioOn) {
-      audioRef.current.pause();
-      setIsAudioOn(false);
-    } else {
-      audioRef.current.play().catch(e => console.log('Audio play failed:', e));
-      setIsAudioOn(true);
-    }
+    setIsAudioOn(!isAudioOn);
   };
 
   const handleThemeChange = (themeId) => {
