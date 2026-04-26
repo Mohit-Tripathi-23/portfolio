@@ -42,11 +42,36 @@
 }
 
 .theme-menu h4 {
-  margin-bottom: 1rem;
+  margin: 0;
   font-size: 1rem;
   color: var(--text-secondary);
+}
+
+.theme-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.audio-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.audio-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
 }
 
 .theme-options {
