@@ -16,6 +16,7 @@ const ThemeSwitcher = () => {
   
   const audioCtxRef = useRef(null);
   const oscillatorRefs = useRef([]);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('portfolio-theme') || 'normal';
@@ -31,6 +32,10 @@ const ThemeSwitcher = () => {
   }, []);
 
   const stopAmbientSound = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     oscillatorRefs.current.forEach(node => {
       try {
         node.stop();
@@ -54,85 +59,68 @@ const ThemeSwitcher = () => {
 
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
-    masterGain.gain.value = 0.1; // Keep it quiet and ambient
+    masterGain.gain.value = 0.2; // Soft master volume
 
-    if (themeId === 'normal') {
-      // Warm, relaxing chord
-      [220, 277.18, 329.63].forEach(freq => {
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = freq / 2;
-        osc.connect(masterGain);
-        osc.start();
-        oscillatorRefs.current.push(osc);
-      });
-    } else if (themeId === 'harry-potter') {
-      // Ethereal, high pitched shimmering
-      [440, 554.37, 659.25, 880].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const lfo = ctx.createOscillator();
-        const lfoGain = ctx.createGain();
-        
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        
-        lfo.type = 'sine';
-        lfo.frequency.value = 0.5 + (i * 0.2); // Shimmer effect
-        lfoGain.gain.value = 10;
-        
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        lfo.start();
-        oscillatorRefs.current.push(lfo);
-        
-        osc.connect(masterGain);
-        osc.start();
-        oscillatorRefs.current.push(osc);
-      });
-      masterGain.gain.value = 0.05; // Make it softer
-    } else if (themeId === 'dnd') {
-      // Deep, hollow, wind-like drone
-      const osc1 = ctx.createOscillator();
-      osc1.type = 'square';
-      osc1.frequency.value = 65.41; // C2
+    // Define relaxing piano/music-box scales for each theme
+    const scales = {
+      'normal': [261.63, 329.63, 392.00, 493.88, 523.25], // Cmaj7 (Calm, relaxing)
+      'harry-potter': [329.63, 392.00, 493.88, 587.33, 659.25, 783.99], // Em (Magical, mysterious)
+      'dnd': [146.83, 220.00, 293.66, 349.23, 440.00], // Dm (Deep, tavern acoustic)
+      'sci-fi': [277.18, 349.23, 415.30, 523.25, 622.25] // Dbmaj7#11 (Dreamy space piano)
+    };
+    
+    const speeds = {
+      'normal': 600,
+      'harry-potter': 400,
+      'dnd': 800,
+      'sci-fi': 700
+    };
+
+    const notes = scales[themeId] || scales['normal'];
+    const speed = speeds[themeId] || 600;
+
+    let noteIndex = 0;
+    
+    const playNextNote = () => {
+      // Generative random walk up and down the scale
+      if (Math.random() > 0.4) {
+        noteIndex = (noteIndex + 1) % notes.length;
+      } else {
+        noteIndex = (noteIndex - 1 + notes.length) % notes.length;
+      }
       
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 400;
+      const freq = notes[noteIndex];
+      const time = ctx.currentTime;
       
-      osc1.connect(filter);
-      filter.connect(masterGain);
-      osc1.start();
-      oscillatorRefs.current.push(osc1);
-      masterGain.gain.value = 0.03;
-    } else if (themeId === 'sci-fi') {
-      // Low rumbling cyberpunk drone
       const osc = ctx.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.value = 55; // A1
+      const gainNode = ctx.createGain();
       
-      const lfo = ctx.createOscillator();
-      lfo.type = 'sine';
-      lfo.frequency.value = 2; // Fast rumble
+      // Use pure sine wave for extremely soft, round piano/bell tone
+      osc.type = themeId === 'sci-fi' ? 'triangle' : 'sine';
+      osc.frequency.setValueAtTime(freq, time);
       
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 15;
+      // Piano-like ADSR Envelope
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(0.4, time + 0.05); // Soft attack
+      gainNode.gain.exponentialRampToValueAtTime(0.1, time + 1.0); // Decay
+      gainNode.gain.exponentialRampToValueAtTime(0.001, time + 3.0); // Long release fade
       
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      lfo.start();
-      oscillatorRefs.current.push(lfo);
+      osc.connect(gainNode);
+      gainNode.connect(masterGain);
       
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 300;
+      osc.start(time);
+      osc.stop(time + 3.5);
       
-      osc.connect(filter);
-      filter.connect(masterGain);
-      osc.start();
       oscillatorRefs.current.push(osc);
-      masterGain.gain.value = 0.05;
-    }
+      
+      // Clean up memory
+      if (oscillatorRefs.current.length > 15) {
+        oscillatorRefs.current.shift();
+      }
+    };
+
+    playNextNote(); // Play first note immediately
+    intervalRef.current = setInterval(playNextNote, speed);
   };
 
   useEffect(() => {
