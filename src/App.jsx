@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import InteractiveBackground from './components/InteractiveBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
@@ -10,8 +11,7 @@ import Footer from './components/Footer';
 function App() {
   return (
     <div className="app-container">
-      <div className="bg-glow-1"></div>
-      <div className="bg-glow-2"></div>
+      <InteractiveBackground />
       <Navbar />
       <main>
         <Hero />
