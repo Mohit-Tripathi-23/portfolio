@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import InteractiveBackground from './components/InteractiveBackground';
+import ThemeSwitcher from './components/ThemeSwitcher';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
@@ -12,6 +13,7 @@ function App() {
   return (
     <div className="app-container">
       <InteractiveBackground />
+      <ThemeSwitcher />
       <Navbar />
       <main>
         <Hero />
