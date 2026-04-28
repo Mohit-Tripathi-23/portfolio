@@ -16,7 +16,7 @@ const Resume = () => {
           <div className="resume-card glass mb-2">
             <div className="resume-card-header">
               <div className="resume-icon-container">
-                <FileText size={24} className="text-gradient" />
+                <FileText size={24} color="var(--accent)" />
               </div>
               <h3>Professional Summary</h3>
             </div>
@@ -32,7 +32,7 @@ const Resume = () => {
               <div className="resume-card glass">
                 <div className="resume-card-header">
                   <div className="resume-icon-container">
-                    <Code size={24} className="text-gradient" />
+                    <Code size={24} color="var(--accent)" />
                   </div>
                   <h3>Technical Skills</h3>
                 </div>
@@ -66,7 +66,7 @@ const Resume = () => {
               <div className="resume-card glass">
                 <div className="resume-card-header">
                   <div className="resume-icon-container">
-                    <Award size={24} className="text-gradient" />
+                    <Award size={24} color="var(--accent)" />
                   </div>
                   <h3>Certifications</h3>
                 </div>
@@ -81,7 +81,7 @@ const Resume = () => {
               <div className="resume-card glass">
                 <div className="resume-card-header">
                   <div className="resume-icon-container">
-                    <GraduationCap size={24} className="text-gradient" />
+                    <GraduationCap size={24} color="var(--accent)" />
                   </div>
                   <h3>Education</h3>
                 </div>
@@ -102,7 +102,7 @@ const Resume = () => {
               <div className="resume-card glass">
                 <div className="resume-card-header">
                   <div className="resume-icon-container">
-                    <Briefcase size={24} className="text-gradient" />
+                    <Briefcase size={24} color="var(--accent)" />
                   </div>
                   <h3>Professional Experience</h3>
                 </div>
@@ -131,7 +131,7 @@ const Resume = () => {
               <div className="resume-card glass">
                 <div className="resume-card-header">
                   <div className="resume-icon-container">
-                    <Code size={24} className="text-gradient" />
+                    <Code size={24} color="var(--accent)" />
                   </div>
                   <h3>Key Projects</h3>
                 </div>

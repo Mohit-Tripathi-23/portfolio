@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import InteractiveBackground from './components/InteractiveBackground';
 import ThemeSwitcher from './components/ThemeSwitcher';
