@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Share+Tech+Mono&display=swap');
 
-:root {
+:root, [data-theme="normal"] {
   --bg-color: #0f172a;
   --bg-secondary: #1e293b;
   --text-primary: #f8fafc;
@@ -13,6 +13,75 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --success: #10b981;
   --error: #ef4444;
+  --font-main: 'Inter', sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --blob-1: rgba(59, 130, 246, 0.15);
+  --blob-2: rgba(139, 92, 246, 0.15);
+  --blob-3: rgba(16, 185, 129, 0.1);
+  --mouse-glow: rgba(59, 130, 246, 0.12);
+}
+
+[data-theme="harry-potter"] {
+  --bg-color: #1a1515;
+  --bg-secondary: #2c2222;
+  --text-primary: #f0e6d2;
+  --text-secondary: #c4b59d;
+  --accent: #d3a625;
+  --accent-hover: #b08d1f;
+  --gradient: linear-gradient(135deg, #740001 0%, #d3a625 100%);
+  --gradient-text: linear-gradient(135deg, #d3a625 0%, #eebd48 100%);
+  --glass-bg: rgba(44, 34, 34, 0.7);
+  --glass-border: rgba(211, 166, 37, 0.2);
+  --success: #2e7538;
+  --error: #740001;
+  --font-main: 'Playfair Display', serif;
+  --font-heading: 'Playfair Display', serif;
+  --blob-1: rgba(116, 0, 1, 0.2);
+  --blob-2: rgba(211, 166, 37, 0.15);
+  --blob-3: rgba(46, 117, 56, 0.1);
+  --mouse-glow: rgba(211, 166, 37, 0.12);
+}
+
+[data-theme="dnd"] {
+  --bg-color: #1c201a;
+  --bg-secondary: #282f25;
+  --text-primary: #e8e2d2;
+  --text-secondary: #a39c87;
+  --accent: #c43221;
+  --accent-hover: #9c2719;
+  --gradient: linear-gradient(135deg, #2b4522 0%, #c43221 100%);
+  --gradient-text: linear-gradient(135deg, #c43221 0%, #d8695b 100%);
+  --glass-bg: rgba(40, 47, 37, 0.7);
+  --glass-border: rgba(163, 156, 135, 0.15);
+  --success: #2b4522;
+  --error: #8a1508;
+  --font-main: 'Inter', sans-serif;
+  --font-heading: 'Cinzel', serif;
+  --blob-1: rgba(43, 69, 34, 0.2);
+  --blob-2: rgba(196, 50, 33, 0.15);
+  --blob-3: rgba(163, 156, 135, 0.1);
+  --mouse-glow: rgba(196, 50, 33, 0.12);
+}
+
+[data-theme="sci-fi"] {
+  --bg-color: #050505;
+  --bg-secondary: #111111;
+  --text-primary: #00f3ff;
+  --text-secondary: #00969e;
+  --accent: #ff00ea;
+  --accent-hover: #c900b9;
+  --gradient: linear-gradient(135deg, #00f3ff 0%, #ff00ea 100%);
+  --gradient-text: linear-gradient(135deg, #00f3ff 0%, #ff00ea 100%);
+  --glass-bg: rgba(17, 17, 17, 0.7);
+  --glass-border: rgba(0, 243, 255, 0.3);
+  --success: #00ff00;
+  --error: #ff003c;
+  --font-main: 'Share Tech Mono', monospace;
+  --font-heading: 'Share Tech Mono', monospace;
+  --blob-1: rgba(0, 243, 255, 0.15);
+  --blob-2: rgba(255, 0, 234, 0.15);
+  --blob-3: rgba(0, 255, 0, 0.1);
+  --mouse-glow: rgba(0, 243, 255, 0.12);
 }
 
 * {
@@ -23,15 +92,16 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-main);
   background-color: var(--bg-color);
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
 }
 
 a {
@@ -109,7 +179,7 @@ ul {
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-main);
   gap: 0.5rem;
   font-size: 1rem;
 }

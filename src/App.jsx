@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import InteractiveBackground from './components/InteractiveBackground';
+import ThemeSwitcher from './components/ThemeSwitcher';
+import ClickEffects from './components/ClickEffects';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
@@ -14,7 +16,9 @@ function App() {
 
   return (
     <div className="app-container">
+      <ClickEffects />
       <InteractiveBackground />
+      <ThemeSwitcher />
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       
       {currentPage === 'home' ? (
